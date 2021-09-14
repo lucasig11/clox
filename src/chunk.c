@@ -7,12 +7,12 @@ void init_chunk(Chunk *chunk) {
     chunk->length = 0;
     chunk->cap = 0;
     chunk->code = NULL;
-	init_value_array(&chunk->constants);
+    init_value_array(&chunk->constants);
 }
 
 void free_chunk(Chunk *chunk) {
     FREE_ARRAY(uint8_t, chunk->code, chunk->cap);
-	free_value_array(&chunk->constants);
+    free_value_array(&chunk->constants);
     init_chunk(chunk);
 }
 
@@ -28,6 +28,6 @@ void write_chunk(Chunk *chunk, uint8_t byte) {
 }
 
 int add_constant(Chunk *chunk, Value value) {
-	write_value_array(&chunk->constants, value);
-	return chunk->constants.length - 1;
+    write_value_array(&chunk->constants, value);
+    return chunk->constants.length - 1;
 }
