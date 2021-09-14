@@ -1,6 +1,7 @@
 IDIR =../include
-ODIR =obj
+BDIR =../build/
 LDIR =../lib
+ODIR =obj
 
 CC=clang
 CC_FLAGS =-I $(IDIR)
@@ -21,11 +22,13 @@ LIBS=
 _DEPS = chunk.h \
 		memory.h \
 		debug.h \
+		value.h \
 		common.h
 
 _OBJ = main.o \
 	   chunk.o \
 	   debug.o \
+	   value.o \
 	   memory.o
 
 DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))
@@ -35,9 +38,9 @@ $(ODIR)/%.o: %.c $(DEPS)
 	$(CC) -c -o $@ $< $(CC_FLAGS)
 
 clox: $(OBJ)
-		$(CC) -o ../build/$@ $^ $(CC_FLAGS) $(LIBS)
+		$(CC) -o $(BDIR)/$@ $^ $(CC_FLAGS) $(LIBS)
 
 .PHONY: clean clox
 
 clean:
-	rm -f $(ODIR)/*.o *~ core $(IDIR)/*~
+	$(RM) $(ODIR)/*.o $(BDIR)/*
