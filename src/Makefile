@@ -20,10 +20,12 @@ LIBS=
 
 _DEPS = chunk.h \
 		memory.h \
+		debug.h \
 		common.h
 
 _OBJ = main.o \
 	   chunk.o \
+	   debug.o \
 	   memory.o
 
 DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))
