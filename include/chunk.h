@@ -10,14 +10,14 @@ typedef enum { OP_CONST, OP_RETURN } OpCode;
 typedef struct {
     int length;
     int cap;
-    ValueArray constants;
+    int *lines;
     uint8_t *code;
+    ValueArray constants;
 } Chunk;
 
 void init_chunk(Chunk *chunk);
 void free_chunk(Chunk *chunk);
-// Append byte to chunk
-void write_chunk(Chunk *chunk, uint8_t byte);
+void write_chunk(Chunk *chunk, uint8_t byte, int lines);
 
 int add_constant(Chunk *chunk, Value value);
 
