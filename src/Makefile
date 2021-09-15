@@ -34,13 +34,18 @@ _OBJ = main.o \
 DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))
 OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
 
+.PHONY: clean clox format
+
 $(ODIR)/%.o: %.c $(DEPS)
 	$(CC) -c -o $@ $< $(CC_FLAGS)
 
-clox: $(OBJ)
-		$(CC) -o $(BDIR)/$@ $^ $(CC_FLAGS) $(LIBS)
+bin: $(OBJ)
+	$(CC) -o $(BDIR)/$@ $^ $(CC_FLAGS) $(LIBS)
 
-.PHONY: clean clox
+format:
+	clang-format --style='{IndentWidth: 4}' -i $(_OBJ:.o=.c) $(DEPS) 
+
+clox: format bin
 
 clean:
 	$(RM) $(ODIR)/*.o $(BDIR)/*
