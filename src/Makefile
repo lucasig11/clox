@@ -21,16 +21,19 @@ LIBS=
 
 _DEPS = chunk.h \
 		memory.h \
+		vm.h \
 		debug.h \
 		value.h \
 		common.h
 
 _OBJ = main.o \
 	   chunk.o \
+	   memory.o \
+	   vm.o \
 	   debug.o \
-	   value.o \
-	   memory.o
+	   value.o
 
+BIN=clox
 DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))
 OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
 
@@ -40,10 +43,10 @@ $(ODIR)/%.o: %.c $(DEPS)
 	$(CC) -c -o $@ $< $(CC_FLAGS)
 
 bin: $(OBJ)
-	$(CC) -o $(BDIR)/$@ $^ $(CC_FLAGS) $(LIBS)
+	$(CC) -o $(BDIR)/$(BIN) $^ $(CC_FLAGS) $(LIBS)
 
 format:
-	clang-format --style='{IndentWidth: 4}' -i $(_OBJ:.o=.c) $(DEPS) 
+	clang-format --style='{IndentWidth: 4}' -i *.c $(IDIR)/*.h
 
 clox: format bin
 

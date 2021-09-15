@@ -1,8 +1,10 @@
 #include "../include/chunk.h"
 #include "../include/common.h"
 #include "../include/debug.h"
+#include "../include/vm.h"
 
 int main(int argc, char *argv[]) {
+    init_VM();
     Chunk chunk;
     init_chunk(&chunk);
 
@@ -14,6 +16,9 @@ int main(int argc, char *argv[]) {
 
     disassemble_chunk(&chunk, "test chunk");
 
+    interpret(&chunk);
+
+    free_VM();
     free_chunk(&chunk);
     return 0;
 }
