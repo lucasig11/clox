@@ -4,7 +4,7 @@
 #include "common.h"
 #include "value.h"
 
-typedef enum { OP_CONST, OP_RETURN } OpCode;
+typedef enum { OP_CONST, OP_NEGATE, OP_RETURN } OpCode;
 
 // Dynamic array to store a sequence of OpCodes
 typedef struct {
