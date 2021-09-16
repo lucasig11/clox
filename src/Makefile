@@ -23,6 +23,8 @@ LIBS=
 _DEPS = chunk.h \
 		memory.h \
 		vm.h \
+		compiler.h \
+		scanner.h \
 		debug.h \
 		value.h \
 		common.h
@@ -30,6 +32,8 @@ _DEPS = chunk.h \
 _OBJ = main.o \
 	   chunk.o \
 	   memory.o \
+	   compiler.o \
+	   scanner.o \
 	   vm.o \
 	   debug.o \
 	   value.o
