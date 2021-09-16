@@ -14,6 +14,13 @@ void free_VM() {}
 static InterpretResult run() {
 #define READ_BYTE() (*vm.ip++)
 #define READ_CONSTANT() (vm.chunk->constants.values[READ_BYTE()])
+#define BINARY_OP(op)                                                          \
+    do {                                                                       \
+        double rhs = pop();                                                    \
+        double lhs = pop();                                                    \
+        push(lhs op rhs);                                                      \
+    } while (false)
+
     while (true) {
 #ifdef DEBUG_TRACE_EXECUTION
         printf("        ");
@@ -32,6 +39,18 @@ static InterpretResult run() {
             push(constant);
             break;
         }
+        case OP_ADD:
+            BINARY_OP(+);
+            break;
+        case OP_SUB:
+            BINARY_OP(-);
+            break;
+        case OP_MUL:
+            BINARY_OP(*);
+            break;
+        case OP_DIV:
+            BINARY_OP(/);
+            break;
         case OP_NEGATE:
             push(-pop());
             break;
@@ -42,6 +61,7 @@ static InterpretResult run() {
         }
         }
     }
+#undef BINARY_OP
 #undef READ_BYTE
 #undef READ_CONSTANT
 }
