@@ -1,7 +1,7 @@
-#include "../include/vm.h"
-#include "../include/compiler.h"
-#include "../include/debug.h"
-#include "../include/value.h"
+#include "vm.h"
+#include "compiler.h"
+#include "debug.h"
+#include "value.h"
 #include <stdio.h>
 
 VM vm;

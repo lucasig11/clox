@@ -1,7 +1,7 @@
-#include "../include/chunk.h"
-#include "../include/common.h"
-#include "../include/debug.h"
-#include "../include/vm.h"
+#include "chunk.h"
+#include "common.h"
+#include "debug.h"
+#include "vm.h"
 
 #include <stdio.h>
 #include <stdlib.h>
