@@ -1,15 +1,16 @@
 
-local header_files = "include/*.h"
+local header_files = "includes/*.h"
 local source_files = "src/*.c"
 
 workspace "clox"
 	configurations { "Debug", "Release" }
 
-
 project "clox"
 	kind "ConsoleApp"
 	language "C"
 	targetdir "bin/%{cfg.buildcfg}"
+
+	includedirs { "includes"}
 
 	files { header_files, source_files}
 	
