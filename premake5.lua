@@ -3,7 +3,7 @@ local header_files = "includes/*.h"
 local source_files = "src/*.c"
 
 workspace "clox"
-	configurations { "Debug", "Release" }
+	configurations { "debug", "release" }
 
 project "clox"
 	kind "ConsoleApp"
