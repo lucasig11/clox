@@ -7,7 +7,6 @@ project "clox"
 
 	targetdir "bin/%{cfg.buildcfg}"
 	objdir "bin/%{cfg.buildcfg}/obj"
-
 	includedirs { "includes" }
 
 	files { "src/**.c" }
@@ -17,6 +16,12 @@ project "clox"
 	filter "configurations:debug"
 		defines { "DEBUG_TRACE_EXECUTION" }
 		symbols "On"
+		optimize "Debug"
 
 	filter "configurations:release"
-		optimize "On"
+		optimize "Speed"
+
+	filter { "action:gmake*", "toolset:gcc or toolset:clang", "configurations:release" }
+		buildoptions {
+			"-Wall", "-Wextra", "-Werror"
+		}
