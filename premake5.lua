@@ -4,6 +4,7 @@ workspace "clox"
 project "clox"
 	kind "ConsoleApp"
 	language "C"
+	toolset "clang"
 
 	targetdir "bin/%{cfg.buildcfg}"
 	objdir "bin/%{cfg.buildcfg}/obj"
@@ -13,15 +14,16 @@ project "clox"
 
 	prebuildcommands { "clang-format --style='{IndentWidth: 4}' -i src/*.c includes/*.h"}
 
+	buildoptions {
+		"-Wall", "-Wextra", "-Werror", "-Wno-unused-parameters"
+	}
+
 	filter "configurations:debug"
 		defines { "DEBUG_TRACE_EXECUTION" }
+		buildoptions { "-Wno-unused-functions" }
 		symbols "On"
 		optimize "Debug"
 
 	filter "configurations:release"
 		optimize "Speed"
 
-	filter { "action:gmake*", "toolset:gcc or toolset:clang", "configurations:release" }
-		buildoptions {
-			"-Wall", "-Wextra", "-Werror"
-		}
