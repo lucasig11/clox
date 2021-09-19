@@ -5,22 +5,22 @@
 #include "value.h"
 
 typedef enum {
-    OP_CONST,
-    OP_ADD,
-    OP_SUB,
-    OP_MUL,
-    OP_DIV,
-    OP_NEGATE,
-    OP_RETURN
+  OP_CONST,
+  OP_ADD,
+  OP_SUB,
+  OP_MUL,
+  OP_DIV,
+  OP_NEGATE,
+  OP_RETURN
 } OpCode;
 
 // Dynamic array to store a sequence of OpCodes
 typedef struct {
-    int length;
-    int cap;
-    int *lines;
-    uint8_t *code;
-    ValueArray constants;
+  int length;
+  int cap;
+  int *lines;
+  uint8_t *code;
+  ValueArray constants;
 } Chunk;
 
 void init_chunk(Chunk *chunk);

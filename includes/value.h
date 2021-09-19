@@ -6,9 +6,9 @@
 typedef double Value;
 
 typedef struct {
-    int cap;
-    int length;
-    Value *values;
+  int cap;
+  int length;
+  Value *values;
 } ValueArray;
 
 // Value functions
