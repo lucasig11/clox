@@ -12,7 +12,7 @@ void init_VM() { reset_stack(); }
 
 void free_VM() {}
 
-InterpretResult run() {
+static InterpretResult run() {
 #define READ_BYTE() (*vm.ip++)
 #define READ_CONSTANT() (vm.chunk->constants.values[READ_BYTE()])
 #define BINARY_OP(op)                                                          \
@@ -83,7 +83,7 @@ InterpretResult interpret(const char *source) {
 
     free_chunk(&chunk);
 
-    return INTERPRET_OK;
+    return result;
 }
 
 void push(Value value) {
