@@ -12,13 +12,12 @@ project "clox"
 	files { "src/**.c" }
 
 	filter {"action:gmake*", "toolset:clang or toolset:gcc"}
-		prebuildcommands { "clang-format --style='{IndentWidth: 4}' -i src/*.c includes/*.h"}
 		buildoptions {
-			"-Wall", "-Wextra", "-Werror", "-Wno-unused-parameters"
+			"-Wall", "-Wextra", "-Wno-unused-parameter", "-Wno-unused-label"
 		}
 
 	filter "configurations:debug"
-		defines { "DEBUG_TRACE_EXECUTION" }
+		defines { "DEBUG" }
 		symbols "On"
 		optimize "Debug"
 
