@@ -6,14 +6,22 @@
 #include "value.h"
 
 typedef enum {
+  // Loads a constant from the chunk's constant pool.
   OP_CONST,
+  // Loads a `nil` constant to the VM stack.
   OP_NIL,
+  // Loads a `true` constant to the VM stack.
   OP_TRUE,
+  // Loads a `false` constant to the VM stack.
   OP_FALSE,
+  // Pops the two uppermost values from the stack as operands and pushes the result.
   OP_ADD,
   OP_SUB,
   OP_MUL,
   OP_DIV,
+  // Logically negate the value at the top of the VM's stack.
+  OP_NOT,
+  // Arithmetically negate the value at the top of the VM's stack.
   OP_NEGATE,
   OP_RETURN
 } OpCode;

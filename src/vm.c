@@ -28,6 +28,11 @@ static void runtime_error(const char *fmt, ...) {
   reset_stack();
 }
 
+static bool is_falsy(Value value) {
+  // `nil` and `false` are falsy. Everything else is truthy.
+  return IS_NIL(value) || (IS_BOOL(value) && !AS_BOOL(value));
+}
+
 static InterpretResult run() {
 #define READ_BYTE() (*vm.ip++)
 #define READ_CONSTANT() (vm.chunk->constants.values[READ_BYTE()])
@@ -80,6 +85,9 @@ static InterpretResult run() {
       break;
     case OP_DIV:
       BINARY_OP(NUMBER_VAL, /);
+      break;
+    case OP_NOT:
+      push(BOOL_VAL(is_falsy(pop())));
       break;
     case OP_NEGATE: {
       // Check if stack_top is an integer
