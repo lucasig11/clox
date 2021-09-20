@@ -164,7 +164,7 @@ static void grouping() {
 
 static void number() {
   double value = strtod(parser.previous.start, NULL);
-  emit_constant(value);
+  emit_constant(NUMBER_VAL(value));
 }
 
 static void unary() {
@@ -252,7 +252,7 @@ bool compile(const char *source, Chunk *chunk) {
   parser.panic_mode = false;
   advance();
   expression();
-  // consume(TOKEN_EOF, "Expected end of expression.");
+  consume(TOKEN_EOF, "Expected end of expression.");
   end_compiler();
   return !parser.had_error;
 }
