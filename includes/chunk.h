@@ -1,3 +1,4 @@
+//! A chunk of VM bytecode.
 #ifndef CLOX_CHUNK_H
 #define CLOX_CHUNK_H
 
@@ -6,6 +7,9 @@
 
 typedef enum {
   OP_CONST,
+  OP_NIL,
+  OP_TRUE,
+  OP_FALSE,
   OP_ADD,
   OP_SUB,
   OP_MUL,
