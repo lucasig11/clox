@@ -14,6 +14,10 @@ typedef enum {
   OP_TRUE,
   // Loads a `false` constant to the VM stack.
   OP_FALSE,
+  // Comparison operations (compares the two first values in the stack)
+  OP_EQUAL,
+  OP_GREATER,
+  OP_LESS,
   // Pops the two uppermost values from the stack as operands and pushes the result.
   OP_ADD,
   OP_SUB,

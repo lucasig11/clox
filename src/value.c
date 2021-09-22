@@ -17,6 +17,21 @@ void print_value(Value value) {
   }
 }
 
+bool values_eq(Value lhs, Value rhs) {
+  if (lhs.type != rhs.type)
+    return false;
+  switch (lhs.type) {
+  case VAL_BOOL:
+    return AS_BOOL(lhs) == AS_BOOL(rhs);
+  case VAL_NIL:
+    return true;
+  case VAL_NUMBER:
+    return AS_NUMBER(lhs) == AS_NUMBER(rhs);
+  default:
+    return false; // unreachable
+  }
+}
+
 void init_value_array(ValueArray *array) {
   array->values = NULL;
   array->cap = 0;

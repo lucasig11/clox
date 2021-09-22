@@ -39,6 +39,7 @@ typedef struct {
 
 // Value functions
 void print_value(Value);
+bool values_eq(Value, Value);
 
 // ValueArray functions
 void init_value_array(ValueArray *);

@@ -74,6 +74,12 @@ static InterpretResult run() {
     case OP_FALSE:
       push(BOOL_VAL(false));
       break;
+    case OP_EQUAL: {
+      Value lhs = pop();
+      Value rhs = pop();
+      push(BOOL_VAL(values_eq(rhs, lhs)));
+      break;
+    }
     case OP_ADD:
       BINARY_OP(NUMBER_VAL, +);
       break;
