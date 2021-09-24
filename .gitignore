@@ -62,3 +62,7 @@ Makefile
 
 # Clangd compile_flags
 compile_flags.txt
+
+# Dart stuff.
+/tool/.dart_tool/
+/tool/.packages
