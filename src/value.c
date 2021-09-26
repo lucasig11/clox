@@ -2,6 +2,7 @@
 #include <string.h>
 
 #include "memory.h"
+#include "object.h"
 #include "value.h"
 
 void print_value(Value value) {
@@ -14,6 +15,9 @@ void print_value(Value value) {
     break;
   case VAL_NUMBER:
     printf("%g", AS_NUMBER(value));
+    break;
+  case VAL_OBJ:
+    print_object(value);
     break;
   }
 }
@@ -28,6 +32,12 @@ bool values_eq(Value lhs, Value rhs) {
     return true;
   case VAL_NUMBER:
     return AS_NUMBER(lhs) == AS_NUMBER(rhs);
+  case VAL_OBJ: {
+    ObjString *aString = AS_STRING(rhs);
+    ObjString *bString = AS_STRING(lhs);
+    return aString->length == bString->length &&
+           memcmp(aString->chars, bString->chars, aString->length) == 0;
+  }
   default:
     return false; // unreachable
   }

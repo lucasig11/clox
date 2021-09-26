@@ -28,3 +28,12 @@ ObjString *copy_string(const char *chars, int length) {
   heap_chars[length] = '\0';
   return allocate_string(heap_chars, length);
 }
+
+void print_object(Value value) {
+  switch
+    OBJ_TYPE(value) {
+    case OBJ_STRING:
+      printf("%s", AS_CSTRING(value));
+      break;
+    }
+}
