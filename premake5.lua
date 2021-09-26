@@ -4,6 +4,7 @@ workspace "clox"
 project "clox"
 	kind "ConsoleApp"
 	language "C"
+	cdialect "C99"
 
 	targetdir "bin/%{cfg.buildcfg}"
 	objdir "bin/%{cfg.buildcfg}/obj"
