@@ -5,6 +5,8 @@
 
 #include "common.h"
 
+#define ALLOCATE(type, size) (type *)reallocate(NULL, 0, sizeof(type) * (size))
+
 #define GROW_CAPACITY(capacity) ((capacity) < 8 ? 8 : (capacity)*2)
 
 #define GROW_ARRAY(type, pointer, old_len, new_len)                            \
