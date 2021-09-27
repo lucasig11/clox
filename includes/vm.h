@@ -13,6 +13,8 @@ typedef struct {
   Value stack[STACK_MAX];
   // Address of the first empty slot in the stack
   Value *stack_top;
+  // Pointer to the head of the objects list (for gc)
+  Obj* objects;
 } VM;
 
 typedef enum {
@@ -20,6 +22,8 @@ typedef enum {
   INTERPRET_COMPILE_ERROR,
   INTERPRET_RUNTIME_ERROR,
 } InterpretResult;
+
+extern VM vm;
 
 void init_VM();
 void free_VM();

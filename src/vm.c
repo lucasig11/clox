@@ -12,9 +12,12 @@ VM vm;
 
 static void reset_stack() { vm.stack_top = vm.stack; }
 
-void init_VM() { reset_stack(); }
+void init_VM() {
+  reset_stack();
+  vm.objects = NULL;
+}
 
-void free_VM() {}
+void free_VM() { free_objects(); }
 
 static Value peek(int distance) { return vm.stack_top[-1 - distance]; }
 
