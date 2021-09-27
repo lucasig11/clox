@@ -1,9 +1,12 @@
 #include "vm.h"
 #include "compiler.h"
 #include "debug.h"
+#include "memory.h"
+#include "object.h"
 #include "value.h"
 #include <stdarg.h>
 #include <stdio.h>
+#include <string.h>
 
 VM vm;
 
@@ -31,6 +34,20 @@ static void runtime_error(const char *fmt, ...) {
 static bool is_falsy(Value value) {
   // `nil` and `false` are falsy. Everything else is truthy.
   return IS_NIL(value) || (IS_BOOL(value) && !AS_BOOL(value));
+}
+
+static void concatenate() {
+  ObjString *rhs = AS_STRING(pop());
+  ObjString *lhs = AS_STRING(pop());
+
+  int length = lhs->length + rhs->length;
+  char *chars = ALLOCATE(char, length + 1);
+  memcpy(chars, lhs->chars, lhs->length);
+  memcpy(chars + lhs->length, rhs->chars, rhs->length);
+  chars[length] = '\0';
+
+  ObjString *result = take_string(chars, length);
+  push(OBJ_VAL(result));
 }
 
 static InterpretResult run() {
@@ -86,9 +103,19 @@ static InterpretResult run() {
     case OP_LESS:
       BINARY_OP(BOOL_VAL, <);
       break;
-    case OP_ADD:
-      BINARY_OP(NUMBER_VAL, +);
+    case OP_ADD: {
+      if (IS_STRING(peek(0)) && IS_STRING(peek(1))) {
+        concatenate();
+      } else if (IS_NUMBER(peek(0)) && IS_NUMBER(peek(0))) {
+        double rhs = AS_NUMBER(pop());
+        double lhs = AS_NUMBER(pop());
+        push(NUMBER_VAL(lhs + rhs));
+      } else {
+        runtime_error("Operands must be two numbers or two strings.");
+        return INTERPRET_RUNTIME_ERROR;
+      }
       break;
+    }
     case OP_SUB:
       BINARY_OP(NUMBER_VAL, -);
       break;
