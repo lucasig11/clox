@@ -24,6 +24,7 @@ void free_table(Table *table);
 bool table_set(Table *table, ObjString *key, Value value);
 // value is an output parameter
 bool table_get(Table *table, ObjString *key, Value *value);
+bool table_delete(Table *table, ObjString *key, Value *value);
 void table_copy(Table *src, Table *dest);
 
 #endif

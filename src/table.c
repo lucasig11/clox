@@ -22,12 +22,22 @@ void free_table(Table *table) {
 
 static Entry *find_entry(Entry *entries, int capacity, ObjString *key) {
   uint32_t index = key->hash % capacity;
+  Entry *tombstone = NULL;
+
   while (true) {
     Entry *entry = &entries[index];
-    if (entry->key == key || entry->key == NULL) {
+    if (entry->key == NULL) {
+      if (IS_NIL(entry->value)) {
+        // Empty entry, return the tombstone as an available bucket
+        return tombstone != NULL ? tombstone : entry;
+      } else {
+        // Here we know that `entry` is a tombstone
+        if (tombstone == NULL)
+          tombstone = entry;
+      }
+    } else if (entry->key == key) {
       return entry;
     }
-
     index = (index + 1) % capacity;
   }
 }
@@ -39,6 +49,7 @@ static void adjust_capacity(Table *table, int capacity) {
     entries[i].value = NIL_VAL;
   }
 
+  table->count = 0;
   // Copy contents of the old table to the new one
   // considering the new capacity for the hash function.
   for (int i = 0; i < table->capacity; i++) {
@@ -49,6 +60,7 @@ static void adjust_capacity(Table *table, int capacity) {
     Entry *dest = find_entry(entries, capacity, entry->key);
     dest->key = entry->key;
     dest->value = entry->value;
+    table->count++;
   }
 
   // Free the old list
@@ -67,7 +79,7 @@ bool table_set(Table *table, ObjString *key, Value value) {
 
   Entry *entry = find_entry(table->entries, table->capacity, key);
   bool is_new_key = entry->key == NULL;
-  if (is_new_key)
+  if (is_new_key && IS_NIL(entry->value))
     table->count++;
 
   entry->key = key;
@@ -85,6 +97,20 @@ bool table_get(Table *table, ObjString *key, Value *value) {
     return false;
 
   *value = entry->value;
+  return true;
+}
+
+bool table_delete(Table *table, ObjString *key, Value *value) {
+  if (table->count == 0)
+    return false;
+
+  Entry *entry = find_entry(table->entries, table->capacity, key);
+  if (entry->key == NULL)
+    return false;
+
+  // Mark as a tombstone
+  entry->key = NULL;
+  entry->value = BOOL_VAL(true);
   return true;
 }
 
