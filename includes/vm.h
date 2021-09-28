@@ -2,8 +2,8 @@
 #define CLOX_VM_H
 
 #include "chunk.h"
-#include "value.h"
 #include "table.h"
+#include "value.h"
 
 #define STACK_MAX 256
 
