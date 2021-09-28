@@ -76,6 +76,18 @@ bool table_set(Table *table, ObjString *key, Value value) {
   return is_new_key;
 }
 
+bool table_get(Table *table, ObjString *key, Value *value) {
+  if (table->count == 0)
+    return false;
+
+  Entry *entry = find_entry(table->entries, table->capacity, key);
+  if (entry->key == NULL)
+    return false;
+
+  *value = entry->value;
+  return true;
+}
+
 void table_copy(Table *src, Table *dest) {
   for (int i = 0; i < src->capacity; i++) {
     Entry *entry = &src->entries[i];

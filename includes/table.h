@@ -22,6 +22,8 @@ typedef struct {
 void init_table(Table *table);
 void free_table(Table *table);
 bool table_set(Table *table, ObjString *key, Value value);
+// value is an output parameter
+bool table_get(Table *table, ObjString *key, Value *value);
 void table_copy(Table *src, Table *dest);
 
 #endif
