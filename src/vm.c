@@ -3,6 +3,7 @@
 #include "debug.h"
 #include "memory.h"
 #include "object.h"
+#include "table.h"
 #include "value.h"
 #include <stdarg.h>
 #include <stdio.h>
@@ -15,9 +16,13 @@ static void reset_stack() { vm.stack_top = vm.stack; }
 void init_VM() {
   reset_stack();
   vm.objects = NULL;
+  init_table(&vm.strings);
 }
 
-void free_VM() { free_objects(); }
+void free_VM() {
+  free_table(&vm.strings);
+  free_objects();
+}
 
 static Value peek(int distance) { return vm.stack_top[-1 - distance]; }
 

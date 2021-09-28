@@ -3,6 +3,7 @@
 
 #include "chunk.h"
 #include "value.h"
+#include "table.h"
 
 #define STACK_MAX 256
 
@@ -13,6 +14,8 @@ typedef struct {
   Value stack[STACK_MAX];
   // Address of the first empty slot in the stack
   Value *stack_top;
+  // Intern pool of string literals
+  Table strings;
   // Pointer to the head of the objects list (for gc)
   Obj* objects;
 } VM;

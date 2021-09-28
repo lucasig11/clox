@@ -32,12 +32,8 @@ bool values_eq(Value lhs, Value rhs) {
     return true;
   case VAL_NUMBER:
     return AS_NUMBER(lhs) == AS_NUMBER(rhs);
-  case VAL_OBJ: {
-    ObjString *aString = AS_STRING(rhs);
-    ObjString *bString = AS_STRING(lhs);
-    return aString->length == bString->length &&
-           memcmp(aString->chars, bString->chars, aString->length) == 0;
-  }
+  case VAL_OBJ:
+    return AS_OBJ(lhs) == AS_OBJ(rhs);
   default:
     return false; // unreachable
   }
