@@ -17,6 +17,8 @@ typedef enum {
   // Consumes the top values from the VM stack.
   OP_POP,
   OP_DEFINE_GLOBAL,
+  OP_GET_GLOBAL,
+  OP_SET_GLOBAL,
   // Comparison operations (compares the two first values in the stack)
   OP_EQUAL,
   OP_GREATER,
