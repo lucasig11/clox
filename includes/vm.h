@@ -16,6 +16,8 @@ typedef struct {
   Value *stack_top;
   // Intern pool of string literals
   Table strings;
+  // Global variables pool
+  Table globals;
   // Pointer to the head of the objects list (for gc)
   Obj* objects;
 } VM;

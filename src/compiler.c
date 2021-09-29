@@ -3,7 +3,9 @@
 
 #include "common.h"
 #include "compiler.h"
+#include "object.h"
 #include "scanner.h"
+#include "value.h"
 
 #ifdef DEBUG_PRINT_CODE
 #include "debug.h"
@@ -293,9 +295,36 @@ static void parse_precedence(Precedence precedence) {
   }
 }
 
+static uint8_t identifier_constant(Token *name) {
+  return make_constant(OBJ_VAL(copy_string(name->start, name->length));
+}
+
+static uint8_t parse_variable(const char *msg) {
+  consume(TOKEN_IDENTIFIER, msg);
+  return identifier_constant(&parser.previous);
+}
+
+static void define_variable(uint8_t global) {
+  emit_bytes(OP_DEFINE_GLOBAL, global);
+}
+
 static ParseRule *get_rule(TokenType type) { return &rules[type]; }
 
 static void expression() { parse_precedence(PREC_ASSIGNMENT); }
+
+static void var_declaration() {
+  uint8_t global = parse_variable("Expect variable name");
+
+  if (match(TOKEN_EQUAL)) {
+    expression();
+  } else {
+    emit_byte(OP_NIL);
+  }
+
+  consume(TOKEN_SEMICOLON, "Expect ';' after variable declaration.");
+
+  define_variable(global);
+}
 
 static void expression_statement() {
   expression();
@@ -332,7 +361,11 @@ static void synchronize() {
 }
 
 static void declaration() {
-  statement();
+  if (match(TOKEN_VAR)) {
+    var_declaration();
+  } else {
+    statement();
+  }
   if (parser.panic_mode)
     synchronize();
 }
