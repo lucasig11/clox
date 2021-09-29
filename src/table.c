@@ -100,7 +100,7 @@ bool table_get(Table *table, ObjString *key, Value *value) {
   return true;
 }
 
-bool table_delete(Table *table, ObjString *key, Value *value) {
+bool table_delete(Table *table, ObjString *key) {
   if (table->count == 0)
     return false;
 
