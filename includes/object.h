@@ -18,7 +18,7 @@ typedef enum {
 struct Obj {
   ObjType type;
   // Next heap-allocated object (used to manage VM memory)
-  struct Obj* next;
+  struct Obj *next;
 };
 
 struct ObjString {

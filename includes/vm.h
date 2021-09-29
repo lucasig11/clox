@@ -19,7 +19,7 @@ typedef struct {
   // Global variables pool
   Table globals;
   // Pointer to the head of the objects list (for gc)
-  Obj* objects;
+  Obj *objects;
 } VM;
 
 typedef enum {
