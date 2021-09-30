@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "common.h"
 #include "compiler.h"
@@ -161,7 +162,16 @@ static void end_compiler() {
 
 static void begin_scope() { current->scope_depth++; }
 
-static void end_scope() { current->scope_depth--; }
+static void end_scope() {
+  current->scope_depth--;
+  // Pop local variables
+  while (current->local_count > 0 &&
+         current->locals[current->local_count - 1].depth >
+             current->scope_depth) {
+    emit_byte(OP_POP);
+    current->local_count++;
+  }
+}
 
 /* Signatures */
 static void expression();
@@ -173,6 +183,40 @@ static void parse_precedence(Precedence precedence);
 
 static uint8_t identifier_constant(Token *name) {
   return make_constant(OBJ_VAL(copy_string(name->start, name->length)));
+}
+
+static bool identifiers_eq(Token *lhs, Token *rhs) {
+  if (lhs->length != rhs->length)
+    return false;
+  return memcmp(lhs, rhs, lhs->length) == 0;
+}
+
+static void add_local(Token name) {
+  if (current->local_count == UINT8_COUNT) {
+    error("Too many local variables in function.");
+    return;
+  }
+  Local *local = &current->locals[current->local_count++];
+  local->name = name;
+  local->depth = current->scope_depth;
+}
+
+static void declare_variable() {
+  if (current->scope_depth == 0)
+    return;
+
+  Token *name = &parser.previous;
+
+  for (int i = current->local_count - 1; i >= 0; i--) {
+    Local *local = &current->locals[i];
+    if (local->depth != -1 && local->depth < current->scope_depth)
+      break;
+
+    if (identifiers_eq(name, &local->name)) {
+      error("Already a variable with this name in this scope");
+    }
+  }
+  add_local(*name);
 }
 
 static void binary(bool can_assign) {
@@ -346,10 +390,18 @@ static void parse_precedence(Precedence precedence) {
 
 static uint8_t parse_variable(const char *msg) {
   consume(TOKEN_IDENTIFIER, msg);
+
+  declare_variable();
+
+  if (current->scope_depth > 0)
+    return 0;
+
   return identifier_constant(&parser.previous);
 }
 
 static void define_variable(uint8_t global) {
+  if (current->scope_depth > 0)
+    return;
   emit_bytes(OP_DEFINE_GLOBAL, global);
 }
 
