@@ -106,6 +106,9 @@ static InterpretResult run() {
     case OP_POP:
       pop();
       break;
+    case OP_POPN:
+      vm.stack_top -= READ_BYTE();
+      break;
     case OP_DEFINE_GLOBAL: {
       ObjString *name = READ_STRING();
       table_set(&vm.globals, name, peek(0));

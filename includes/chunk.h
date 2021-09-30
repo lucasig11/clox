@@ -16,6 +16,8 @@ typedef enum {
   OP_FALSE,
   // Consumes the top values from the VM stack.
   OP_POP,
+  // Consumes `n` top values from the VM stack.
+  OP_POPN,
   OP_DEFINE_GLOBAL,
   OP_GET_GLOBAL,
   OP_SET_GLOBAL,

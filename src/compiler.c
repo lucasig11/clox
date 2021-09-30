@@ -165,12 +165,14 @@ static void begin_scope() { current->scope_depth++; }
 static void end_scope() {
   current->scope_depth--;
   // Pop local variables
+  uint8_t count = 0;
   while (current->local_count > 0 &&
          current->locals[current->local_count - 1].depth >
              current->scope_depth) {
-    emit_byte(OP_POP);
-    current->local_count++;
+    count++;
   }
+  emit_bytes(OP_POPN, count);
+  current->local_count -= count;
 }
 
 /* Signatures */
