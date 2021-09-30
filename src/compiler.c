@@ -190,7 +190,20 @@ static uint8_t identifier_constant(Token *name) {
 static bool identifiers_eq(Token *lhs, Token *rhs) {
   if (lhs->length != rhs->length)
     return false;
-  return memcmp(lhs, rhs, lhs->length) == 0;
+  return memcmp(lhs->start, rhs->start, lhs->length) == 0;
+}
+
+static int resolve_local(Compiler *compiler, Token *name) {
+  for (int i = compiler->local_count - 1; i >= 0; i--) {
+    Local *local = &compiler->locals[i];
+    if (identifiers_eq(name, &local->name)) {
+      if (local->depth == -1) {
+        error("Can't read local variable in its own initializer.");
+      }
+      return i;
+    }
+  }
+  return -1;
 }
 
 static void add_local(Token name) {
@@ -200,7 +213,7 @@ static void add_local(Token name) {
   }
   Local *local = &current->locals[current->local_count++];
   local->name = name;
-  local->depth = current->scope_depth;
+  local->depth = -1;
 }
 
 static void declare_variable() {
@@ -294,14 +307,23 @@ static void string(bool can_assign) {
 }
 
 static void named_variable(Token name, bool can_assign) {
-  uint8_t arg = identifier_constant(&name);
+  uint8_t get_op, set_op;
+
+  int arg = resolve_local(current, &name);
+  if (arg != -1) {
+    get_op = OP_GET_LOCAL;
+    set_op = OP_SET_LOCAL;
+  } else {
+    arg = identifier_constant(&name);
+    get_op = OP_GET_GLOBAL;
+    set_op = OP_SET_GLOBAL;
+  }
 
   if (can_assign && match(TOKEN_EQUAL)) {
     expression();
-    emit_bytes(OP_SET_GLOBAL, arg);
+    emit_bytes(set_op, arg);
   } else {
-
-    emit_bytes(OP_GET_GLOBAL, arg);
+    emit_bytes(get_op, arg);
   }
 }
 
@@ -401,9 +423,15 @@ static uint8_t parse_variable(const char *msg) {
   return identifier_constant(&parser.previous);
 }
 
+static void initialize_variable() {
+  current->locals[current->local_count - 1].depth = current->scope_depth;
+}
+
 static void define_variable(uint8_t global) {
-  if (current->scope_depth > 0)
+  if (current->scope_depth > 0) {
+    initialize_variable();
     return;
+  }
   emit_bytes(OP_DEFINE_GLOBAL, global);
 }
 
