@@ -169,10 +169,10 @@ static void end_scope() {
   while (current->local_count > 0 &&
          current->locals[current->local_count - 1].depth >
              current->scope_depth) {
+    current->local_count--;
     count++;
   }
   emit_bytes(OP_POPN, count);
-  current->local_count -= count;
 }
 
 /* Signatures */
