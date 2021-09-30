@@ -129,7 +129,7 @@ static InterpretResult run() {
       ObjString *name = READ_STRING();
       Value value;
       if (!table_get(&vm.globals, name, &value)) {
-        runtime_error("Undefined variable '%s'", name->chars);
+        runtime_error("Undefined variable '%s'.", name->chars);
         return INTERPRET_RUNTIME_ERROR;
       }
       push(value);
@@ -139,7 +139,7 @@ static InterpretResult run() {
       ObjString *name = READ_STRING();
       if (table_set(&vm.globals, name, peek(0))) {
         table_delete(&vm.globals, name);
-        runtime_error("Undefined variable '%s'.", name);
+        runtime_error("Undefined variable '%s'.", name->chars);
         return INTERPRET_RUNTIME_ERROR;
       }
       break;
@@ -159,7 +159,7 @@ static InterpretResult run() {
     case OP_ADD: {
       if (IS_STRING(peek(0)) && IS_STRING(peek(1))) {
         concatenate();
-      } else if (IS_NUMBER(peek(0)) && IS_NUMBER(peek(0))) {
+      } else if (IS_NUMBER(peek(0)) && IS_NUMBER(peek(1))) {
         double rhs = AS_NUMBER(pop());
         double lhs = AS_NUMBER(pop());
         push(NUMBER_VAL(lhs + rhs));

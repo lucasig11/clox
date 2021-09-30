@@ -70,13 +70,11 @@ static void error_at(Token *token, const char *message) {
     return;
   parser.panic_mode = true;
   fprintf(stderr, "[line %d] Error", token->line);
-  switch (token->type) {
-  TOKEN_EOF:
+  if (token->type == TOKEN_EOF) {
     fprintf(stderr, " at end.");
-    break;
-  TOKEN_ERROR:
-    break;
-  default:
+  } else if (token->type == TOKEN_ERROR) {
+    // Do nothing;
+  } else {
     fprintf(stderr, " at '%.*s'", token->length, token->start);
   }
 
@@ -228,7 +226,7 @@ static void declare_variable() {
       break;
 
     if (identifiers_eq(name, &local->name)) {
-      error("Already a variable with this name in this scope");
+      error("Already a variable with this name in this scope.");
     }
   }
   add_local(*name);
@@ -395,7 +393,7 @@ static void parse_precedence(Precedence precedence) {
   advance();
   ParseFn prefix_rule = get_rule(parser.previous.type)->prefix;
   if (prefix_rule == NULL) {
-    error("Expected expression.");
+    error("Expect expression.");
     return;
   }
 
@@ -408,7 +406,7 @@ static void parse_precedence(Precedence precedence) {
   }
 
   if (can_assign && match(TOKEN_EQUAL)) {
-    error("Invalid assigment target");
+    error("Invalid assignment target.");
   }
 }
 
@@ -447,7 +445,7 @@ static void block() {
 }
 
 static void var_declaration() {
-  uint8_t global = parse_variable("Expect variable name");
+  uint8_t global = parse_variable("Expect variable name.");
 
   if (match(TOKEN_EQUAL)) {
     expression();
@@ -468,7 +466,7 @@ static void expression_statement() {
 
 static void print_statement() {
   expression();
-  consume(TOKEN_SEMICOLON, "Expect ';' after value");
+  consume(TOKEN_SEMICOLON, "Expect ';' after value.");
   emit_byte(OP_PRINT);
 }
 
