@@ -38,6 +38,7 @@ typedef enum {
   // Arithmetically negate the value at the top of the VM's stack.
   OP_NEGATE,
   OP_PRINT,
+  OP_JUMP_IF_FALSE,
   OP_RETURN
 } OpCode;
 
