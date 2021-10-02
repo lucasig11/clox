@@ -198,6 +198,8 @@ static void statement();
 static void declaration();
 static ParseRule *get_rule(TokenType type);
 static void parse_precedence(Precedence precedence);
+static void and_(bool can_assign);
+static void or_(bool can_assign);
 /**/
 
 static uint8_t identifier_constant(Token *name) {
@@ -388,7 +390,7 @@ ParseRule rules[] = {
     [TOKEN_IDENTIFIER] = {variable, NULL, PREC_NONE},
     [TOKEN_STRING] = {string, NULL, PREC_NONE},
     [TOKEN_NUMBER] = {number, NULL, PREC_NONE},
-    [TOKEN_AND] = {NULL, NULL, PREC_NONE},
+    [TOKEN_AND] = {NULL, and_, PREC_AND},
     [TOKEN_CLASS] = {NULL, NULL, PREC_NONE},
     [TOKEN_ELSE] = {NULL, NULL, PREC_NONE},
     [TOKEN_FALSE] = {literal, NULL, PREC_NONE},
@@ -396,7 +398,7 @@ ParseRule rules[] = {
     [TOKEN_FUN] = {NULL, NULL, PREC_NONE},
     [TOKEN_IF] = {NULL, NULL, PREC_NONE},
     [TOKEN_NIL] = {literal, NULL, PREC_NONE},
-    [TOKEN_OR] = {NULL, NULL, PREC_NONE},
+    [TOKEN_OR] = {NULL, or_, PREC_OR},
     [TOKEN_PRINT] = {NULL, NULL, PREC_NONE},
     [TOKEN_RETURN] = {NULL, NULL, PREC_NONE},
     [TOKEN_SUPER] = {NULL, NULL, PREC_NONE},
@@ -450,6 +452,26 @@ static void define_variable(uint8_t global) {
     return;
   }
   emit_bytes(OP_DEFINE_GLOBAL, global);
+}
+
+static void and_(bool can_assign) {
+  int end_jump = emit_jump(OP_JUMP_IF_FALSE);
+
+  emit_byte(OP_POP);
+  parse_precedence(PREC_AND);
+
+  patch_jump(end_jump);
+}
+
+static void or_(bool can_assign) {
+  int else_jump = emit_jump(OP_JUMP_IF_FALSE);
+  int end_jump = emit_jump(OP_JUMP);
+
+  patch_jump(else_jump);
+  emit_byte(OP_POP);
+
+  parse_precedence(PREC_OR);
+  patch_jump(end_jump);
 }
 
 static ParseRule *get_rule(TokenType type) { return &rules[type]; }
