@@ -464,13 +464,11 @@ static void and_(bool can_assign) {
 }
 
 static void or_(bool can_assign) {
-  int else_jump = emit_jump(OP_JUMP_IF_FALSE);
-  int end_jump = emit_jump(OP_JUMP);
+  int end_jump = emit_jump(OP_JUMP_IF_TRUE);
 
-  patch_jump(else_jump);
   emit_byte(OP_POP);
-
   parse_precedence(PREC_OR);
+
   patch_jump(end_jump);
 }
 
