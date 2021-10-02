@@ -488,9 +488,22 @@ static void if_statement() {
   expression();
   consume(TOKEN_RIGHT_PAREN, "Expect ')' after condition.");
 
+  // Jump to the 'else' if the expression is falsy.
   int then_jmp = emit_jump(OP_JUMP_IF_FALSE);
+  // Pops the condition value from the stack
+  emit_byte(OP_POP);
+  // 'then' statement
   statement();
+
+  // Emit a jump so the 'then' branch will not fall through
+  // the 'else' branch
+  int else_jmp = emit_jump(OP_JUMP);
+
   patch_jump(then_jmp);
+  emit_byte(OP_POP);
+  if (match(TOKEN_ELSE))
+    statement();
+  patch_jump(else_jmp);
 }
 
 static void print_statement() {
