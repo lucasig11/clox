@@ -133,7 +133,7 @@ static void emit_loop(int loop_start) {
   emit_byte(OP_LOOP);
 
   // +2 for the instruction operands
-  int offset = current_chunk()->length + loop_start + 2;
+  int offset = current_chunk()->length - loop_start + 2;
   if (offset > UINT16_MAX) {
     error("Loop body too large.");
   }
@@ -512,8 +512,53 @@ static void var_declaration() {
 
 static void expression_statement() {
   expression();
-  consume(TOKEN_SEMICOLON, "Expect ';' after value");
+  consume(TOKEN_SEMICOLON, "Expect ';' after expression.");
   emit_byte(OP_POP);
+}
+
+static void for_statement() {
+  begin_scope();
+  consume(TOKEN_LEFT_PAREN, "Expect '(' after for.");
+  if (match(TOKEN_SEMICOLON)) {
+    // No initializer
+  } else if (match(TOKEN_VAR)) {
+    var_declaration();
+  } else {
+    expression_statement();
+  }
+
+  int loop_start = current_chunk()->length;
+  int exit_jump = -1;
+  if (!match(TOKEN_SEMICOLON)) {
+    expression();
+    consume(TOKEN_SEMICOLON, "Expect ';' after loop condition.");
+
+    // Exit the loop if the condition evaluates to false.
+    exit_jump = emit_jump(OP_JUMP_IF_FALSE);
+    // Pop the condition out of the stack
+    emit_byte(OP_POP);
+  }
+  if (!match(TOKEN_RIGHT_PAREN)) {
+    int body_jump = emit_jump(OP_JUMP);
+    int increment_start = current_chunk()->length;
+    expression();
+    // Discard the expression result
+    emit_byte(OP_POP);
+    consume(TOKEN_RIGHT_PAREN, "Expect ')' after for clauses.");
+
+    emit_loop(loop_start);
+    loop_start = increment_start;
+    patch_jump(body_jump);
+  }
+
+  statement();
+  emit_loop(loop_start);
+
+  if (exit_jump != -1) {
+    patch_jump(exit_jump);
+    emit_byte(OP_POP);
+  }
+  end_scope();
 }
 
 static void if_statement() {
@@ -554,7 +599,7 @@ static void while_statement() {
   int exit_jump = emit_jump(OP_JUMP_IF_FALSE);
   emit_byte(OP_POP);
   statement();
-  emitLoop(loop_start);
+  emit_loop(loop_start);
 
   patch_jump(exit_jump);
   emit_byte(OP_POP);
@@ -595,6 +640,8 @@ static void declaration() {
 static void statement() {
   if (match(TOKEN_PRINT)) {
     print_statement();
+  } else if (match(TOKEN_FOR)) {
+    for_statement();
   } else if (match(TOKEN_IF)) {
     if_statement();
   } else if (match(TOKEN_WHILE)) {
