@@ -4,6 +4,6 @@
 #include "chunk.h"
 #include "object.h"
 
-bool compile(const char *src, Chunk *chunk);
+ObjFunction *compile(const char *src);
 
 #endif
