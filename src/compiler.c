@@ -193,7 +193,7 @@ static void init_compiler(Compiler *compiler, FunctionType type) {
   compiler->function = new_function();
   current = compiler;
 
-  Local *local = &current->locals[current->local_count + 1];
+  Local *local = &current->locals[current->local_count++];
   local->depth = 0;
   local->name.start = "";
   local->name.length = 0;
