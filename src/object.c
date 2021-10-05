@@ -68,7 +68,11 @@ ObjString *copy_string(const char *chars, int length) {
 }
 
 static void print_function(ObjFunction *function) {
-  printf("<fn %s>", function->name ? function->name->chars : "<script>");
+  if (function->name == NULL) {
+    printf("<script>");
+    return;
+  }
+  printf("<fn %s>", function->name->chars);
 }
 
 void print_object(Value value) {

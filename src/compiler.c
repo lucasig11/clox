@@ -203,8 +203,9 @@ static ObjFunction *end_compiler() {
   ObjFunction *function = current->function;
 #ifdef DEBUG_PRINT_CODE
   if (!parser.had_error) {
-    disassemble_chunk(current_chunk(),
-                      function->name ? function->name->chars : "<script>");
+    disassemble_chunk(current_chunk(), function->name != NULL
+                                           ? function->name->chars
+                                           : "<script>");
   }
 #endif
   return function;
