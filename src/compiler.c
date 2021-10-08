@@ -476,13 +476,15 @@ static uint8_t parse_variable(const char *msg) {
   return identifier_constant(&parser.previous);
 }
 
-static void initialize_variable() {
+static void mark_initialized() {
+  if (current->scope_depth == 0)
+    return;
   current->locals[current->local_count - 1].depth = current->scope_depth;
 }
 
 static void define_variable(uint8_t global) {
   if (current->scope_depth > 0) {
-    initialize_variable();
+    mark_initialized();
     return;
   }
   emit_bytes(OP_DEFINE_GLOBAL, global);
