@@ -519,6 +519,28 @@ static void block() {
   consume(TOKEN_RIGHT_BRACE, "Expect '}' after block.");
 }
 
+static void function(FunctionType type) {
+  Compiler compiler;
+  init_compiler(&compiler, type);
+  begin_scope();
+
+  consume(TOKEN_LEFT_PAREN, "Expect '(' after function name.");
+  consume(TOKEN_RIGHT_PAREN, "Expect ')' after parameters.");
+  consume(TOKEN_RIGHT_BRACE, "Expect '{' before function body.");
+
+  block();
+
+  ObjFunction *function = end_compiler();
+  emit_bytes(OP_CONST, make_constant(OBJ_VAL(function)));
+}
+
+static void fun_declaration() {
+  uint8_t global = parse_variable("Expect function name.");
+  mark_initialized();
+  function(TYPE_FUNCTION);
+  define_variable(global);
+}
+
 static void var_declaration() {
   uint8_t global = parse_variable("Expect variable name.");
 
@@ -651,7 +673,9 @@ static void synchronize() {
 }
 
 static void declaration() {
-  if (match(TOKEN_VAR)) {
+  if (match(TOKEN_FUN)) {
+    fun_declaration();
+  } else if (match(TOKEN_VAR)) {
     var_declaration();
   } else {
     statement();
