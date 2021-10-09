@@ -53,7 +53,9 @@ typedef enum {
   TYPE_SCRIPT,
 } FunctionType;
 
-typedef struct {
+typedef struct Compiler {
+  // Points to the previous, outermost, environment
+  struct Compiler *enclosing;
   ObjFunction *function;
   FunctionType type;
 
@@ -187,6 +189,8 @@ static void patch_jump(int offset) {
 static void init_compiler(Compiler *compiler, FunctionType type) {
   // garbage-collection related paranoia
   compiler->function = NULL;
+  // Link the environments
+  compiler->enclosing = current;
   compiler->type = type;
   compiler->local_count = 0;
   compiler->scope_depth = 0;
@@ -208,6 +212,7 @@ static ObjFunction *end_compiler() {
                                            : "<script>");
   }
 #endif
+  current = current->enclosing;
   return function;
 }
 
