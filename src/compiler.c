@@ -549,7 +549,7 @@ static void function(FunctionType type) {
   }
 
   consume(TOKEN_RIGHT_PAREN, "Expect ')' after parameters.");
-  consume(TOKEN_RIGHT_BRACE, "Expect '{' before function body.");
+  consume(TOKEN_LEFT_BRACE, "Expect '{' before function body.");
 
   block();
 
