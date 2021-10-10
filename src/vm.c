@@ -24,7 +24,7 @@ static void runtime_error(const char *fmt, ...) {
   va_end(args);
   fputs("\n", stderr);
   // Print the stack trace
-  for (size_t i = vm.frame_count - 1; i >= 0; --i) {
+  for (int i = vm.frame_count - 1; i >= 0; --i) {
     CallFrame *frame = &vm.frames[i];
     ObjFunction *function = frame->function;
     size_t instruction = frame->ip - function->chunk.code - 1;
