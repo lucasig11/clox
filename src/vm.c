@@ -74,13 +74,10 @@ void free_VM() {
 static Value peek(int distance) { return vm.stack_top[-1 - distance]; }
 
 static bool call(ObjFunction *function, int argc) {
-  if (argc != function->arity) {
-    runtime_error("Expected %d arguments but got %d.", function->arity, argc);
-    return false;
-  }
+  CHECK_ARITY(argc, function->arity)
 
   if (vm.frame_count == FRAMES_MAX) {
-    runtime_error("Stack overflow");
+    runtime_error("Stack overflow.");
     return false;
   }
 

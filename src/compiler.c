@@ -90,7 +90,7 @@ static void error_at(Token *token, const char *message) {
   parser.panic_mode = true;
   fprintf(stderr, "[line %d] Error", token->line);
   if (token->type == TOKEN_EOF) {
-    fprintf(stderr, " at end.");
+    fprintf(stderr, " at end");
   } else if (token->type == TOKEN_ERROR) {
     // Do nothing;
   } else {
@@ -567,10 +567,10 @@ static void function(FunctionType type) {
     do {
       current->function->arity++;
       if (current->function->arity > 255) {
-        error_at_current("Can't have more than 255 parameters");
+        error_at_current("Can't have more than 255 parameters.");
       }
 
-      uint8_t constant = parse_variable("Expect parameter name");
+      uint8_t constant = parse_variable("Expect parameter name.");
       define_variable(constant);
     } while (match(TOKEN_COMMA));
   }
