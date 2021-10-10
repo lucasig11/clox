@@ -1,6 +1,7 @@
 #include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
+#include <time.h>
 
 #include "compiler.h"
 #include "debug.h"
@@ -12,25 +13,14 @@
 
 VM vm;
 
+static Value clockNative(int argc, Value *argv) {
+  return NUMBER_VAL((double)clock() / CLOCKS_PER_SEC);
+}
+
 static void reset_stack() {
   vm.stack_top = vm.stack;
   vm.frame_count = 0;
 }
-
-void init_VM() {
-  reset_stack();
-  vm.objects = NULL;
-  init_table(&vm.globals);
-  init_table(&vm.strings);
-}
-
-void free_VM() {
-  free_table(&vm.globals);
-  free_table(&vm.strings);
-  free_objects();
-}
-
-static Value peek(int distance) { return vm.stack_top[-1 - distance]; }
 
 static void runtime_error(const char *fmt, ...) {
   va_list args;
@@ -59,6 +49,23 @@ static void define_native(const char *name, NativeFn function) {
   pop();
   pop();
 }
+
+void init_VM() {
+  reset_stack();
+  vm.objects = NULL;
+  init_table(&vm.globals);
+  init_table(&vm.strings);
+
+  define_native("clock", clockNative);
+}
+
+void free_VM() {
+  free_table(&vm.globals);
+  free_table(&vm.strings);
+  free_objects();
+}
+
+static Value peek(int distance) { return vm.stack_top[-1 - distance]; }
 
 static bool call(ObjFunction *function, int argc) {
   if (argc != function->arity) {
