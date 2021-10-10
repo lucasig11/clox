@@ -141,7 +141,10 @@ static void emit_byte(uint8_t byte) {
   write_chunk(current_chunk(), byte, parser.previous.line);
 }
 
-static void emit_return() { emit_byte(OP_RETURN); }
+static void emit_return() {
+  emit_byte(OP_NIL);
+  emit_byte(OP_RETURN);
+}
 
 static void emit_bytes(uint8_t byte1, uint8_t byte2) {
   emit_byte(byte1);

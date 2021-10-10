@@ -277,7 +277,23 @@ static InterpretResult run() {
       break;
     }
     case OP_RETURN: {
-      return INTERPRET_OK;
+      // Get the result from the stack
+      Value result = pop();
+      vm.frame_count--;
+
+      // Top-level function. Exit the interpreter.
+      if (vm.frame_count == 0) {
+        pop();
+        return INTERPRET_OK;
+      }
+
+      // Drop function arguments slots
+      vm.stack_top = frame->slots;
+      // Push the return value back to the stack
+      push(result);
+      // Update the cached frame
+      frame = &vm.frames[vm.frame_count - 1];
+      break;
     }
     }
   }
