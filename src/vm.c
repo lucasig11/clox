@@ -75,6 +75,13 @@ static bool call_value(Value callee, int argc) {
     switch (OBJ_TYPE(callee)) {
     case OBJ_FUNCTION:
       return call(AS_FUNCTION(callee), argc);
+    case OBJ_NATIVE: {
+      NativeFn native = AS_NATIVE(callee);
+      Value result = native(argc, vm.stack_top - argc);
+      vm.stack_top -= argc + 1;
+      push(result);
+      return true;
+    }
     default:
       break; // Non-callable object type
     }

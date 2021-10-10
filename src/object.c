@@ -27,6 +27,12 @@ ObjFunction *new_function() {
   return function;
 }
 
+ObjNative *new_native(NativeFn function) {
+  ObjNative *native = ALLOCATE_OBJ(ObjNative, OBJ_NATIVE);
+  native->function = function;
+  return native;
+}
+
 static ObjString *allocate_string(char *chars, int length, uint32_t hash) {
   ObjString *str = ALLOCATE_OBJ(ObjString, OBJ_STRING);
   ObjString *interned = table_find_string(&vm.strings, chars, length, hash);
