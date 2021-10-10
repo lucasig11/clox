@@ -87,6 +87,9 @@ void print_object(Value value) {
     case OBJ_FUNCTION:
       print_function(AS_FUNCTION(value));
       break;
+    case OBJ_NATIVE:
+      printf("<native fn>");
+      break;
     case OBJ_STRING:
       printf("%s", AS_CSTRING(value));
       break;
