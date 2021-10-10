@@ -1,5 +1,7 @@
+#define _GNU_SOURCE
 #include <stdarg.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <time.h>
 
@@ -13,6 +15,8 @@
 
 VM vm;
 
+static void runtime_error(const char *fmt, ...);
+
 #define CHECK_ARITY(_count, _arity)                                            \
   if (_count != _arity) {                                                      \
     runtime_error("Expected %d arguments but got %d.", _arity, _count);        \
@@ -21,6 +25,17 @@ VM vm;
 
 static Value clockNative(int argc, Value *argv) {
   return NUMBER_VAL((double)clock() / CLOCKS_PER_SEC);
+}
+
+static Value inputNative(int argc, Value *argv) {
+  // TODO: type-check
+  print_value(argv[0]);
+  char *buf = NULL;
+  size_t buf_len = 0;
+  size_t b_read = getline(&buf, &buf_len, stdin);
+  buf[b_read - 1] = '\0';
+  ObjString *out = take_string(buf, b_read - 1);
+  return OBJ_VAL(out);
 }
 
 static void reset_stack() {
@@ -63,6 +78,7 @@ void init_VM() {
   init_table(&vm.strings);
 
   define_native("clock", clockNative, 0);
+  define_native("input", inputNative, 1);
 }
 
 void free_VM() {
