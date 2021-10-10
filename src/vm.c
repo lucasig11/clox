@@ -17,6 +17,21 @@ static void reset_stack() {
   vm.frame_count = 0;
 }
 
+void init_VM() {
+  reset_stack();
+  vm.objects = NULL;
+  init_table(&vm.globals);
+  init_table(&vm.strings);
+}
+
+void free_VM() {
+  free_table(&vm.globals);
+  free_table(&vm.strings);
+  free_objects();
+}
+
+static Value peek(int distance) { return vm.stack_top[-1 - distance]; }
+
 static void runtime_error(const char *fmt, ...) {
   va_list args;
   va_start(args, fmt);
@@ -37,20 +52,13 @@ static void runtime_error(const char *fmt, ...) {
   reset_stack();
 }
 
-void init_VM() {
-  reset_stack();
-  vm.objects = NULL;
-  init_table(&vm.globals);
-  init_table(&vm.strings);
+static void define_native(const char *name, NativeFn function) {
+  push(OBJ_VAL(copy_string(name, strlen(name))));
+  push(OBJ_VAL(new_native(function)));
+  table_set(&vm.globals, AS_STRING(vm.stack[0]), vm.stack[1]);
+  pop();
+  pop();
 }
-
-void free_VM() {
-  free_table(&vm.globals);
-  free_table(&vm.strings);
-  free_objects();
-}
-
-static Value peek(int distance) { return vm.stack_top[-1 - distance]; }
 
 static bool call(ObjFunction *function, int argc) {
   if (argc != function->arity) {
