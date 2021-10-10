@@ -73,6 +73,15 @@ Compiler *current = NULL;
 // Current chunk being compiled
 Chunk *compiling_chunk;
 
+static void expression();
+static void statement();
+static void declaration();
+static ParseRule *get_rule(TokenType type);
+static void parse_precedence(Precedence precedence);
+static uint8_t argument_list();
+static void and_(bool can_assign);
+static void or_(bool can_assign);
+
 static Chunk *current_chunk() { return &current->function->chunk; }
 
 static void error_at(Token *token, const char *message) {
@@ -237,13 +246,6 @@ static void end_scope() {
 }
 
 /* Signatures */
-static void expression();
-static void statement();
-static void declaration();
-static ParseRule *get_rule(TokenType type);
-static void parse_precedence(Precedence precedence);
-static void and_(bool can_assign);
-static void or_(bool can_assign);
 /**/
 
 static uint8_t identifier_constant(Token *name) {
@@ -338,6 +340,11 @@ static void binary(bool can_assign) {
   }
 }
 
+static void call(bool can_assign) {
+  uint8_t argc = argument_list();
+  emit_bytes(OP_CALL, argc);
+}
+
 static void literal(bool can_assign) {
   switch (parser.previous.type) {
   case TOKEN_FALSE:
@@ -412,7 +419,7 @@ static void unary(bool can_assign) {
 }
 
 ParseRule rules[] = {
-    [TOKEN_LEFT_PAREN] = {grouping, NULL, PREC_NONE},
+    [TOKEN_LEFT_PAREN] = {grouping, call, PREC_CALL},
     [TOKEN_RIGHT_PAREN] = {NULL, NULL, PREC_NONE},
     [TOKEN_LEFT_BRACE] = {NULL, NULL, PREC_NONE},
     [TOKEN_RIGHT_BRACE] = {NULL, NULL, PREC_NONE},
@@ -498,6 +505,23 @@ static void define_variable(uint8_t global) {
     return;
   }
   emit_bytes(OP_DEFINE_GLOBAL, global);
+}
+
+static uint8_t argument_list() {
+  uint8_t argc = 0;
+
+  if (!check(TOKEN_RIGHT_PAREN)) {
+    do {
+      expression();
+      if (argc == UINT8_MAX) {
+        error("Can't have more than 255 arguments.");
+      }
+      argc++;
+    } while (match(TOKEN_COMMA));
+  }
+
+  consume(TOKEN_RIGHT_PAREN, "Expect ')' after arguments.");
+  return argc;
 }
 
 static void and_(bool can_assign) {
