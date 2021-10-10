@@ -13,6 +13,12 @@
 
 VM vm;
 
+#define CHECK_ARITY(_count, _arity)                                            \
+  if (_count != _arity) {                                                      \
+    runtime_error("Expected %d arguments but got %d.", _arity, _count);        \
+    return false;                                                              \
+  }
+
 static Value clockNative(int argc, Value *argv) {
   return NUMBER_VAL((double)clock() / CLOCKS_PER_SEC);
 }
@@ -42,9 +48,9 @@ static void runtime_error(const char *fmt, ...) {
   reset_stack();
 }
 
-static void define_native(const char *name, NativeFn function) {
+static void define_native(const char *name, NativeFn function, uint8_t arity) {
   push(OBJ_VAL(copy_string(name, strlen(name))));
-  push(OBJ_VAL(new_native(function)));
+  push(OBJ_VAL(new_native(function, arity)));
   table_set(&vm.globals, AS_STRING(vm.stack[0]), vm.stack[1]);
   pop();
   pop();
@@ -56,7 +62,7 @@ void init_VM() {
   init_table(&vm.globals);
   init_table(&vm.strings);
 
-  define_native("clock", clockNative);
+  define_native("clock", clockNative, 0);
 }
 
 void free_VM() {
@@ -91,6 +97,8 @@ static bool call_value(Value callee, int argc) {
     case OBJ_FUNCTION:
       return call(AS_FUNCTION(callee), argc);
     case OBJ_NATIVE: {
+      uint8_t arity = ((ObjNative *)AS_OBJ(callee))->arity;
+      CHECK_ARITY(argc, arity)
       NativeFn native = AS_NATIVE(callee);
       Value result = native(argc, vm.stack_top - argc);
       vm.stack_top -= argc + 1;

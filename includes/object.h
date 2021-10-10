@@ -41,6 +41,7 @@ typedef Value (*NativeFn)(int argc, Value *argv);
 typedef struct {
   Obj obj;
   NativeFn function;
+  uint8_t arity;
 } ObjNative;
 
 struct ObjString {
@@ -51,7 +52,7 @@ struct ObjString {
 };
 
 ObjFunction *new_function();
-ObjNative *new_native(NativeFn function);
+ObjNative *new_native(NativeFn function, uint8_t arity);
 ObjString *take_string(char *chars, int length);
 ObjString *copy_string(const char *chars, int length);
 void print_object(Value value);
