@@ -107,8 +107,8 @@ static bool call(ObjFunction *function, int argc) {
 static bool call_value(Value callee, int argc) {
   if (IS_OBJ(callee)) {
     switch (OBJ_TYPE(callee)) {
-    case OBJ_FUNCTION:
-      return call(AS_FUNCTION(callee), argc);
+    case OBJ_CLOSURE:
+      return call(AS_CLOSURE(callee), argc);
     case OBJ_NATIVE: {
       uint8_t arity = ((ObjNative *)AS_OBJ(callee))->arity;
       CHECK_ARITY(argc, arity)
@@ -324,6 +324,12 @@ static InterpretResult run() {
       }
       frame = &vm.frames[vm.frame_count - 1];
       ip = frame->ip;
+      break;
+    }
+    case OP_CLOSURE: {
+      ObjFunction *function = AS_FUNCTION(READ_CONSTANT());
+      ObjClosure *closure = new_closure(function);
+      push(OBJ_VAL(closure));
       break;
     }
     case OP_RETURN: {
