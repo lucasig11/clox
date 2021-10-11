@@ -52,7 +52,7 @@ static void runtime_error(const char *fmt, ...) {
   // Print the stack trace
   for (int i = vm.frame_count - 1; i >= 0; --i) {
     CallFrame *frame = &vm.frames[i];
-    ObjFunction *function = frame->function;
+    ObjFunction *function = frame->closure->function;
     size_t instruction = frame->ip - function->chunk.code - 1;
     fprintf(stderr, "[line %d] in ", function->chunk.lines[instruction]);
     if (function->name == NULL)
@@ -89,8 +89,8 @@ void free_VM() {
 
 static Value peek(int distance) { return vm.stack_top[-1 - distance]; }
 
-static bool call(ObjFunction *function, int argc) {
-  CHECK_ARITY(argc, function->arity)
+static bool call(ObjClosure *closure, int argc) {
+  CHECK_ARITY(argc, closure->function->arity)
 
   if (vm.frame_count == FRAMES_MAX) {
     runtime_error("Stack overflow.");
@@ -98,8 +98,8 @@ static bool call(ObjFunction *function, int argc) {
   }
 
   CallFrame *frame = &vm.frames[vm.frame_count++];
-  frame->function = function;
-  frame->ip = function->chunk.code;
+  frame->closure = closure;
+  frame->ip = closure->function->chunk.code;
   frame->slots = vm.stack_top - argc - 1;
   return true;
 }
@@ -154,7 +154,8 @@ static InterpretResult run() {
 // Builds a 16-bit uint from the next two bytes in the chunk
 #define READ_SHORT() (ip += 2, (uint16_t)((ip[-2] << 8) | ip[-1]))
 
-#define READ_CONSTANT() (frame->function->chunk.constants.values[READ_BYTE()])
+#define READ_CONSTANT()                                                        \
+  (frame->closure->function->chunk.constants.values[READ_BYTE()])
 
 #define READ_STRING() AS_STRING(READ_CONSTANT())
 
@@ -179,8 +180,8 @@ static InterpretResult run() {
       printf("]");
     }
     printf("\n");
-    disassemble_instruction(&frame->function->chunk,
-                            (int)(ip - frame->function->chunk.code));
+    disassemble_instruction(&frame->closure->function->chunk,
+                            (int)(ip - frame->closure->function->chunk.code));
 #endif
     uint8_t instruction;
     switch (instruction = READ_BYTE()) {
@@ -368,8 +369,10 @@ InterpretResult interpret(const char *source) {
     return INTERPRET_COMPILE_ERROR;
 
   push(OBJ_VAL(function));
-
-  call(function, 0);
+  ObjClosure *closure = new_closure(function);
+  pop();
+  push(OBJ_VAL(closure));
+  call(closure, 0);
 
   return run();
 }
