@@ -23,6 +23,8 @@ typedef enum {
   OP_GET_GLOBAL,
   OP_SET_GLOBAL,
   OP_DEFINE_GLOBAL,
+  OP_SET_UPVALUE,
+  OP_GET_UPVALUE,
   // Comparison operations (compares the two first values in the stack)
   OP_EQUAL,
   OP_GREATER,
