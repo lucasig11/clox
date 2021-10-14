@@ -309,6 +309,12 @@ static int resolve_upvalue(Compiler *compiler, Token *name) {
   if (local != -1) {
     return add_upvalue(compiler, (uint8_t)local, true);
   }
+
+  int upvalue = resolve_upvalue(compiler->enclosing, name);
+  if (upvalue != -1) {
+    return add_upvalue(compiler, (uint8_t)upvalue, false);
+  }
+
   return -1;
 }
 
@@ -623,6 +629,11 @@ static void function(FunctionType type) {
 
   ObjFunction *function = end_compiler();
   emit_bytes(OP_CLOSURE, make_constant(OBJ_VAL(function)));
+
+  for (int i = 0; i < function->upvalue_count; ++i) {
+    emit_byte(compiler.upvalues[i].is_local ? 1 : 0);
+    emit_byte(compiler.upvalues[i].index);
+  }
 }
 
 static void fun_declaration() {
