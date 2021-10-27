@@ -299,7 +299,7 @@ static int add_upvalue(Compiler *compiler, uint8_t index, bool is_local) {
   }
 
   if (upvalue_count == UINT8_COUNT) {
-    error("Too many closure variables in function");
+    error("Too many closure variables in function.");
     return 0;
   }
 
