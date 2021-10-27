@@ -440,7 +440,7 @@ static void named_variable(Token name, bool can_assign) {
   if (arg != -1) {
     get_op = OP_GET_LOCAL;
     set_op = OP_SET_LOCAL;
-  } else if ((arg = resolve_upvalue(current, &name) != -1)) {
+  } else if ((arg = resolve_upvalue(current, &name)) != -1) {
     get_op = OP_GET_UPVALUE;
     set_op = OP_SET_UPVALUE;
   } else {
