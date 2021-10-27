@@ -62,6 +62,7 @@ typedef struct ObjUpvalue {
   Value *location;
   // Pointer to the next upvalue (list)
   struct ObjUpvalue *next;
+  Value closed;
 } ObjUpvalue;
 
 typedef struct {

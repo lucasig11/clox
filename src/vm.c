@@ -153,6 +153,17 @@ static ObjUpvalue *capture_upvalue(Value *local) {
   return created_upvalue;
 }
 
+static void close_upvalues(Value *last) {
+  while (vm.open_upvalues != NULL && vm.open_upvalues->location >= last) {
+    ObjUpvalue *upvalue = vm.open_upvalues;
+    // Copy the variable value to the `closed` field
+    upvalue->closed = *upvalue->location;
+    // Update the location field to point to the `closed` field
+    upvalue->location = &upvalue->closed;
+    vm.open_upvalues = upvalue->next;
+  }
+}
+
 static bool is_falsy(Value value) {
   // `nil` and `false` are falsy. Everything else is truthy.
   return IS_NIL(value) || (IS_BOOL(value) && !AS_BOOL(value));
@@ -381,9 +392,17 @@ static InterpretResult run() {
       }
       break;
     }
+
+    case OP_CLOSE_UPVALUE: {
+      close_upvalues(vm.stack_top - 1);
+      pop();
+      break;
+    }
     case OP_RETURN: {
       // Get the result from the stack
       Value result = pop();
+      // Close function's locals
+      close_upvalues(frame->slots);
       vm.frame_count--;
 
       // Top-level function. Exit the interpreter.
