@@ -41,6 +41,7 @@ static Value inputNative(int argc, Value *argv) {
 static void reset_stack() {
   vm.stack_top = vm.stack;
   vm.frame_count = 0;
+  vm.open_upvalues = NULL;
 }
 
 static void runtime_error(const char *fmt, ...) {
@@ -127,8 +128,29 @@ static bool call_value(Value callee, int argc) {
 }
 
 static ObjUpvalue *capture_upvalue(Value *local) {
-  ObjUpvalue *upval = new_upvalue(local);
-  return upval;
+  ObjUpvalue *prev_upval = NULL;
+  ObjUpvalue *upvalue = vm.open_upvalues;
+
+  while (upvalue != NULL && upvalue->location > local) {
+    prev_upval = upvalue;
+    upvalue = upvalue->next;
+  }
+
+  if (upvalue != NULL && upvalue->location == local) {
+    return upvalue;
+  }
+
+  ObjUpvalue *created_upvalue = created_upvalue(local);
+
+  created_upvalue->next = upvalue;
+
+  if (prev_upval == NULL) {
+    vm.open_upvalues = created_upvalue;
+  } else {
+    prev_upval->next = created_upvalue;
+  }
+
+  return created_upvalue;
 }
 
 static bool is_falsy(Value value) {

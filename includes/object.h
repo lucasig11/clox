@@ -56,10 +56,12 @@ struct ObjString {
   uint32_t hash;
 };
 
-typedef struct {
+typedef struct ObjUpvalue {
   Obj obj;
   // Pointer to the closed-over variable
   Value *location;
+  // Pointer to the next upvalue (list)
+  struct ObjUpvalue *next;
 } ObjUpvalue;
 
 typedef struct {

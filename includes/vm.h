@@ -28,6 +28,8 @@ typedef struct {
   Table globals;
   // Pointer to the head of the objects list (for gc)
   Obj *objects;
+  // Pointer to the head of the upvalues list
+  ObjUpvalue *open_upvalues;
 } VM;
 
 typedef enum {
