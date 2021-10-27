@@ -140,7 +140,7 @@ static ObjUpvalue *capture_upvalue(Value *local) {
     return upvalue;
   }
 
-  ObjUpvalue *created_upvalue = created_upvalue(local);
+  ObjUpvalue *created_upvalue = new_upvalue(local);
 
   created_upvalue->next = upvalue;
 
