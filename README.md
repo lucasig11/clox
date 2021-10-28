@@ -15,15 +15,15 @@ premake5 gmake2
 make config=release
 ```
 
-## 🧪 Test
-```sh
-dart tool/bin/test.dart --interpreter bin/release/clox
-```
-
 ## 🚀 Run
 ```sh
 ./bin/release/clox  		# Launches the REPL
 ./bin/release/clox  [file] 	# Executes a script
+```
+
+## 🧪 Test
+```sh
+dart tool/bin/test.dart --interpreter bin/release/clox
 ```
 
 ## 🧱 Develop
