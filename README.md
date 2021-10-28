@@ -3,25 +3,32 @@
 
 A bytecode VM interpreter for the Lox programming language.
 
-# 🛠 Build
+## 📌 Requirements
+- [Premake5](https://premake.github.io/download/) 
+- [Dart](https://dart.dev/get-dart)
+- [Watchexec](https://github.com/watchexec/watchexec)
+- GNU Make and some C/C++ compiler
+
+## 🛠 Build
 ```sh
 premake5 gmake2
 make config=release
 ```
 
-# 🧪 Test
+## 🧪 Test
 ```sh
 dart tool/bin/test.dart --interpreter bin/release/clox
 ```
 
-# 🚀 Run
+## 🚀 Run
 ```sh
 ./bin/release/clox  		# Launches the REPL
 ./bin/release/clox  [file] 	# Executes a script
 ```
 
-# 🧱 Develop
+## 🧱 Develop
+Watches for changes in the source files, compile the program and run the tests.
 ```sh
 chmod +x watch.sh
-./watch.sh [chapter] # Watches the changes in the source files, compile them and run the tests.
+./watch.sh [chapter] # chapter is optional
 ```
