@@ -5,7 +5,8 @@ A bytecode VM interpreter for the Lox programming language.
 
 ## 📌 Requirements
 - [Premake5](https://premake.github.io/download/) 
-- GNU Make and some C/C++ compiler
+- GNU Make and some C/C++ compiler  
+
 *Testing/Developing only*
 - [Dart](https://dart.dev/get-dart) 
 - [Watchexec](https://github.com/watchexec/watchexec) 
