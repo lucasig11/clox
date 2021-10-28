@@ -31,6 +31,5 @@ dart tool/bin/test.dart --interpreter bin/release/clox
 ## 🧱 Develop
 Watches for changes in the source files, compile the program and run the tests.
 ```sh
-chmod +x watch.sh
-./watch.sh [chapter] # chapter is optional
+sh tool/bin/watch.sh [chapter] # chapter is optional
 ```
