@@ -30,6 +30,11 @@ typedef struct {
   Obj *objects;
   // Pointer to the head of the upvalues list
   ObjUpvalue *open_upvalues;
+
+  // Grey GC Objects
+  int gray_count;
+  int gray_cap;
+  Obj **gray_stack;
 } VM;
 
 typedef enum {

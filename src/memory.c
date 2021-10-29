@@ -38,11 +38,20 @@ void mark_object(Obj *object) {
   printf("\n");
 #endif
   object->marked = true;
+
+  if (vm.gray_cap < vm.gray_count + 1) {
+    vm.gray_cap = GROW_CAPACITY(vm.gray_cap);
+    vm.gray_stack = realloc(vm.gray_stack, vm.gray_cap * sizeof(Obj *));
+    if (vm.gray_stack == NULL)
+      exit(1);
+  }
+
+  vm.gray_stack[vm.gray_count++] = object;
 }
 
 void mark_value(Value value) {
   if (IS_OBJ(value)) {
-    mark_object(AS_OBJ(value);
+    mark_object(AS_OBJ(value));
   }
 }
 
@@ -104,6 +113,7 @@ void free_objects() {
     free_object(object);
     object = next;
   }
+  free(vm.gray_stack);
 }
 
 void collect_garbage() {
