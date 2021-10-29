@@ -29,7 +29,9 @@ typedef enum {
 
 struct Obj {
   ObjType type;
-  // Next heap-allocated object (used to manage VM memory)
+  // GC flag for sweeping objects.
+  bool marked;
+  // The next object in the linked list of all objects.
   struct Obj *next;
 };
 

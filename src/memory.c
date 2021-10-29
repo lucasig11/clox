@@ -1,5 +1,6 @@
 #include <stdlib.h>
 
+#include "compiler.h"
 #include "memory.h"
 #include "vm.h"
 
@@ -27,9 +28,27 @@ void *reallocate(void *ptr, size_t old_size, size_t new_size) {
   return result;
 }
 
+void mark_object(Obj *object) {
+  if (object == NULL)
+    return;
+
+#ifdef DEBUG_LOG_GC
+  printf("[GC] Mark -> %p\n", (void *)object);
+  print_value(OBJ_VAL(object));
+  printf("\n");
+#endif
+  object->marked = true;
+}
+
+void mark_value(Value value) {
+  if (IS_OBJ(value)) {
+    mark_object(AS_OBJ(value);
+  }
+}
+
 static void free_object(Obj *object) {
 #ifdef DEBUG_LOG_GC
-  printf("[GC] Free -> %p (%d)\n", (void *)object, object->type);
+  printf("[GC] Drop -> %p (%d)\n", (void *)object, object->type);
 #endif
   switch (object->type) {
   case OBJ_CLOSURE: {
@@ -60,6 +79,24 @@ static void free_object(Obj *object) {
   }
   }
 }
+
+static void mark_roots() {
+  for (Value *slot = vm.stack; slot < vm.stack_top; slot++) {
+    mark_value(*slot);
+  }
+
+  for (int i = 0; i < vm.frame_count; i++) {
+    mark_object((Obj *)&vm.frames[i].closure);
+  }
+
+  for (ObjUpvalue *upvalue = vm.open_upvalues; upvalue != NULL; upvalue++) {
+    mark_object((Obj *)upvalue);
+  }
+
+  mark_table(&vm.globals);
+  mark_compiler_roots();
+}
+
 void free_objects() {
   Obj *object = vm.objects;
   while (object != NULL) {
@@ -73,6 +110,8 @@ void collect_garbage() {
 #ifdef DEBUG_LOG_GC
   printf("[GC] Start\n");
 #endif
+
+  mark_roots();
 
 #ifdef DEBUG_LOG_GC
   printf("[GC] End\n");
