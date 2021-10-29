@@ -20,5 +20,6 @@
 
 void *reallocate(void *ptr, size_t old_size, size_t new_size);
 void free_objects();
+void collect_garbage();
 
 #endif
