@@ -35,6 +35,11 @@ typedef struct {
   int gray_count;
   int gray_cap;
   Obj **gray_stack;
+
+  // Bytes allocated by the VM
+  size_t bytes_allocated;
+  // Next `bytes_allocated` threshold to run the GC
+  size_t next_gc;
 } VM;
 
 typedef enum {

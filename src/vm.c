@@ -75,6 +75,8 @@ static void define_native(const char *name, NativeFn function, uint8_t arity) {
 void init_VM() {
   reset_stack();
   vm.objects = NULL;
+  vm.bytes_allocated = 0;
+  vm.next_gc = 1024 * 1024;
 
   vm.gray_cap = 0;
   vm.gray_count = 0;
