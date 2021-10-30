@@ -149,6 +149,26 @@ static void trace_references() {
   }
 }
 
+static void sweep() {
+  Obj **object = &vm.objects;
+
+  while ((*object)) {
+    if ((*object)->marked) {
+      (*object)->marked = false;
+      object = &(*object)->next;
+    } else {
+#ifdef DEBUG_LOG_GC
+      printf("[GC] Sweep -> %p (%d) ", (void *)*object, (*object)->type);
+      print_value(OBJ_VAL(*object));
+      printf("\n");
+#endif
+      Obj *unreached = *object;
+      *object = (*object)->next;
+      free_object(unreached);
+    }
+  }
+}
+
 void free_objects() {
   Obj *object = vm.objects;
   while (object != NULL) {
@@ -166,6 +186,7 @@ void collect_garbage() {
 
   mark_roots();
   trace_references();
+  sweep();
 
 #ifdef DEBUG_LOG_GC
   printf("[GC] End\n");
