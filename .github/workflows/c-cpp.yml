@@ -23,5 +23,5 @@ jobs:
     - name: Generate project
       run: make config=release
     - name: Run tests
-      run: ./run-tests
+      run: ./tool/bin/run-tests
 
