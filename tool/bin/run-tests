@@ -1,2 +1,12 @@
 #!/usr/bin/sh 
-dart tool/bin/test.dart chap26_garbage --interpreter bin/release/clox
+
+if [ "$1" != "" ]; then
+    echo "Updating last_chapter to $1"
+    echo $1 > $PWD/last_chapter
+fi
+
+chapter=$(cat $PWD/last_chapter)
+
+echo Testing $chapter...
+
+dart tool/bin/test.dart $chapter --interpreter $PWD/bin/release/clox
