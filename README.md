@@ -25,7 +25,7 @@ make config=release
 
 ## 🧪 Test
 ```sh
-dart tool/bin/test.dart --interpreter bin/release/clox
+./tool/bin/run-tests
 ```
 
 ## 🧱 Develop
