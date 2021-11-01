@@ -13,14 +13,12 @@
 
 static Obj *allocate_object(size_t size, ObjType type) {
   Obj *object = (Obj *)reallocate(NULL, 0, size);
-  object->type = type;
-  object->next = vm.objects;
-  object->marked = false;
+  object->header = (unsigned long)type | (unsigned long)vm.objects << 8;
   vm.objects = object;
 
 #ifdef DEBUG_LOG_GC
-  printf("[GC] Allocate -> %p (%d) %zu bytes\n", (void *)object, object->type,
-         size);
+  printf("[GC] Allocate -> %p (%d) %zu bytes\n", (void *)object,
+         obj_type(object), size);
 #endif
   return object;
 }

@@ -36,7 +36,7 @@ void *reallocate(void *ptr, size_t old_size, size_t new_size) {
 }
 
 void mark_object(Obj *object) {
-  if (object == NULL || object->marked)
+  if (object == NULL || is_marked(object))
     return;
 
 #ifdef DEBUG_LOG_GC
@@ -44,7 +44,7 @@ void mark_object(Obj *object) {
   print_value(OBJ_VAL(object));
   printf("\n");
 #endif
-  object->marked = true;
+  obj_set_mark(object, true);
 
   if (vm.gray_cap < vm.gray_count + 1) {
     vm.gray_cap = GROW_CAPACITY(vm.gray_cap);
@@ -74,7 +74,7 @@ void blacken_object(Obj *object) {
   print_value(OBJ_VAL(object));
   printf("\n");
 #endif
-  switch (object->type) {
+  switch (obj_type(object)) {
   case OBJ_CLOSURE: {
     ObjClosure *closure = (ObjClosure *)object;
     mark_object((Obj *)closure->function);
@@ -100,9 +100,9 @@ void blacken_object(Obj *object) {
 
 static void free_object(Obj *object) {
 #ifdef DEBUG_LOG_GC
-  printf("[GC] Drop -> %p (%d)\n", (void *)object, object->type);
+  printf("[GC] Drop -> %p (%d)\n", (void *)object, obj_type(object));
 #endif
-  switch (object->type) {
+  switch (obj_type(object)) {
   case OBJ_CLOSURE: {
     ObjClosure *closure = (ObjClosure *)object;
     FREE_ARRAY(ObjUpvalue *, closure->upvalues, closure->upvalue_count);
@@ -160,17 +160,17 @@ static void sweep() {
   Obj **object = &vm.objects;
 
   while ((*object)) {
-    if ((*object)->marked) {
-      (*object)->marked = false;
-      object = &(*object)->next;
+    if (is_marked(*object)) {
+      obj_set_mark(*object, false);
+      *object = obj_next(*object);
     } else {
 #ifdef DEBUG_LOG_GC
-      printf("[GC] Sweep -> %p (%d) ", (void *)*object, (*object)->type);
+      printf("[GC] Sweep -> %p (%d) ", (void *)*object, obj_type(*object));
       print_value(OBJ_VAL(*object));
       printf("\n");
 #endif
       Obj *unreached = *object;
-      *object = (*object)->next;
+      *object = obj_next(unreached);
       free_object(unreached);
     }
   }
@@ -179,7 +179,7 @@ static void sweep() {
 void free_objects() {
   Obj *object = vm.objects;
   while (object != NULL) {
-    Obj *next = object->next;
+    Obj *next = obj_next(object);
     free_object(object);
     object = next;
   }
