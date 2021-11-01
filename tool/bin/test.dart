@@ -576,6 +576,7 @@ void _defineTestSuites() {
     "test/super": "skip",
     "test/this": "skip",
     "test/variable/local_from_method.lox": "skip",
+    "test/variable/use_this_as_var.lox": "skip",
   };
 
   // No inheritance in C yet.
