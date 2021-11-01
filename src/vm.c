@@ -177,8 +177,9 @@ static bool is_falsy(Value value) {
 }
 
 static void concatenate() {
-  ObjString *rhs = AS_STRING(pop());
-  ObjString *lhs = AS_STRING(pop());
+  // Peek the strings to the GC marks them
+  ObjString *rhs = AS_STRING(peek(0));
+  ObjString *lhs = AS_STRING(peek(1));
 
   int length = lhs->length + rhs->length;
   char *chars = ALLOCATE(char, length + 1);
@@ -187,6 +188,9 @@ static void concatenate() {
   chars[length] = '\0';
 
   ObjString *result = take_string(chars, length);
+  // Pop the operand strings
+  pop();
+  pop();
   push(OBJ_VAL(result));
 }
 
