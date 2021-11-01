@@ -14,7 +14,13 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Setup Dart VM
-      uses: vanesyan/setup-dart@v1
+    - uses: dart-lang/setup-dart@v1.0
+        with:
+          sdk: ${{ matrix.sdk }}
+      - id: install
+        name: Install dependencies
+        working-directory: ./tool
+        run: dart pub get
     - name: Setup premake
       uses: abel0b/setup-premake@v1
     - name: Build makefile
