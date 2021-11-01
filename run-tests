@@ -1,0 +1,2 @@
+#!/usr/bin/sh 
+dart tool/bin/test.dart chap26_garbage --interpreter bin/release/clox
