@@ -12,14 +12,10 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - uses: abel0b/setup-premake@v1
-    - uses: dart-lang/setup-dart@v1.0
     - name: Generate project
       run: |
         premake5 gmake2
         make config=release
-    - name: Fetch dependencies
-      working-directory: ./tool
-      run: dart pub get
     - name: Run tests
       run: ./tool/bin/run-tests
 
