@@ -75,6 +75,11 @@ void blacken_object(Obj *object) {
   printf("\n");
 #endif
   switch (obj_type(object)) {
+  case OBJ_CLASS: {
+    ObjClass *klass = (ObjClass *)object;
+    mark_object((Obj *)klass->name);
+    break;
+  }
   case OBJ_CLOSURE: {
     ObjClosure *closure = (ObjClosure *)object;
     mark_object((Obj *)closure->function);
@@ -103,6 +108,10 @@ static void free_object(Obj *object) {
   printf("[GC] Drop -> %p (%d)\n", (void *)object, obj_type(object));
 #endif
   switch (obj_type(object)) {
+  case OBJ_CLASS: {
+    FREE(ObjClass, object);
+    break;
+  }
   case OBJ_CLOSURE: {
     ObjClosure *closure = (ObjClosure *)object;
     FREE_ARRAY(ObjUpvalue *, closure->upvalues, closure->upvalue_count);
