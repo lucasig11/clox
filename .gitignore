@@ -66,3 +66,6 @@ compile_flags.txt
 # Dart stuff.
 /tool/.dart_tool/
 /tool/.packages
+!tool/bin/
+.vim
+
