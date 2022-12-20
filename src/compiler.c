@@ -403,6 +403,24 @@ static void call(bool can_assign) {
   emit_bytes(OP_CALL, argc);
 }
 
+static void dot(bool can_assign) {
+  consume(TOKEN_IDENTIFIER, "Expect property name after '.'.");
+  // Load idientifier lexeme string into constant pool, so we can use it at
+  // runtime.
+  uint8_t name = identifier_constant(&parser.previous);
+
+  if (can_assign && match(TOKEN_EQUAL)) {
+    expression();
+    emit_bytes(OP_SET_PROPERTY, name);
+    /* } else if (match(TOKEN_LEFT_PAREN)) { */
+    /*   uint8_t argc = argument_list(); */
+    /*   emit_bytes(OP_INVOKE, name); */
+    /*   emit_byte(argc); */
+  } else {
+    emit_bytes(OP_GET_PROPERTY, name);
+  }
+}
+
 static void literal(bool can_assign) {
   switch (parser.previous.type) {
   case TOKEN_FALSE:
@@ -485,7 +503,7 @@ ParseRule rules[] = {
     [TOKEN_LEFT_BRACE] = {NULL, NULL, PREC_NONE},
     [TOKEN_RIGHT_BRACE] = {NULL, NULL, PREC_NONE},
     [TOKEN_COMMA] = {NULL, NULL, PREC_NONE},
-    [TOKEN_DOT] = {NULL, NULL, PREC_NONE},
+    [TOKEN_DOT] = {NULL, dot, PREC_CALL},
     [TOKEN_MINUS] = {unary, binary, PREC_TERM},
     [TOKEN_PLUS] = {NULL, binary, PREC_TERM},
     [TOKEN_SEMICOLON] = {NULL, NULL, PREC_NONE},

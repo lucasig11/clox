@@ -62,7 +62,7 @@ typedef struct {
   int line;
 } Token;
 
-void init_scanner();
+void init_scanner(const char*);
 Token scan_token();
 
 #endif
