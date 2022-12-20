@@ -69,3 +69,4 @@ compile_flags.txt
 !tool/bin/
 .vim
 
+tool/bin/run-tests.ts

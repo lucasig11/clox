@@ -115,6 +115,11 @@ static bool call(ObjClosure *closure, int argc) {
 static bool call_value(Value callee, int argc) {
   if (IS_OBJ(callee)) {
     switch (OBJ_TYPE(callee)) {
+    case OBJ_CLASS: {
+      ObjClass *klass = AS_CLASS(callee);
+      vm.stack_top[-argc - 1] = OBJ_VAL(new_instance(klass));
+      return true;
+    }
     case OBJ_CLOSURE:
       return call(AS_CLOSURE(callee), argc);
     case OBJ_NATIVE: {
@@ -429,6 +434,10 @@ static InterpretResult run() {
       // Update the cached frame
       frame = &vm.frames[vm.frame_count - 1];
       ip = frame->ip;
+      break;
+    }
+    case OP_CLASS: {
+      push(OBJ_VAL(new_class(READ_STRING())));
       break;
     }
     }

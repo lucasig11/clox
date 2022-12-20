@@ -124,6 +124,12 @@ static void free_object(Obj *object) {
     FREE(ObjFunction, object);
     break;
   }
+  case OBJ_INSTANCE: {
+    ObjInstance *instance = (ObjInstance *)object;
+    free_table(&instance->fields);
+    FREE(ObjInstance, object);
+    break;
+  }
   case OBJ_NATIVE: {
     FREE(ObjNative, object);
     break;
